@@ -23,6 +23,18 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
+// TEMPORARY - make a user admin by email
+app.get("/api/make-admin/:email", async (req, res) => {
+  const User = require("./models/User");
+  const user = await User.findOneAndUpdate(
+    { email: req.params.email },
+    { role: "admin" },
+    { new: true }
+  );
+  if (!user) return res.status(404).json({ message: "User not found" });
+  res.json({ success: true, user: { email: user.email, role: user.role } });
+});
+
 // TEMPORARY SEED ROUTE - DELETE AFTER SEEDING
 app.get("/api/seed", async (req, res) => {
   const { execFile } = require("child_process");
