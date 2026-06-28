@@ -1,20 +1,8 @@
-import dotenv from "dotenv";
-dotenv.config();
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import courseRoutes from "./routes/courseRoutes.js";
-import moduleRoutes from "./routes/moduleRoutes.js";
-import enrollmentRoutes from "./routes/enrollmentRoutes.js";
-import examRoutes from "./routes/examRoutes.js";
-import certificateRoutes from "./routes/certificateRoutes.js";
-import moduleExamRoutes from "./routes/moduleExamRoutes.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const connectDB = require("./config/db");
 
 const app = express();
 
@@ -31,18 +19,16 @@ app.use(cors({
 
 app.options("*", cors());
 app.use(express.json());
-
-const __uploadsDir = path.join(__dirname, "uploads");
-app.use("/uploads", express.static(__uploadsDir));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
-app.use("/api/auth", authRoutes);
-app.use("/api/courses", courseRoutes);
-app.use("/api/modules", moduleRoutes);
-app.use("/api/enrollments", enrollmentRoutes);
-app.use("/api/exams", examRoutes);
-app.use("/api/module-exams", moduleExamRoutes);
-app.use("/api/certificates", certificateRoutes);
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/courses", require("./routes/courseRoutes"));
+app.use("/api/modules", require("./routes/moduleRoutes"));
+app.use("/api/enrollments", require("./routes/enrollmentRoutes"));
+app.use("/api/exams", require("./routes/examRoutes"));
+app.use("/api/module-exams", require("./routes/moduleExamRoutes"));
+app.use("/api/certificates", require("./routes/certificateRoutes"));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
