@@ -22,6 +22,16 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+
+// TEMPORARY SEED ROUTE - DELETE AFTER SEEDING
+app.get("/api/seed", async (req, res) => {
+  const { execFile } = require("child_process");
+  execFile("node", ["seed.js"], { cwd: __dirname }, (err, stdout, stderr) => {
+    if (err) return res.status(500).json({ error: err.message, stderr });
+    res.json({ success: true, output: stdout });
+  });
+});
+
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/courses", require("./routes/courseRoutes"));
 app.use("/api/modules", require("./routes/moduleRoutes"));
