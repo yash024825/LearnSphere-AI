@@ -29,27 +29,27 @@ Browse all courses, track progress, and pick up where you left off.
 ### Course Detail Page
 Course overview with modules, learning outcomes, and enrollment.
 
-![Course Detail](frontend/src/assets/coursepage.png)
+![Course Detail](frontend/src/assets/coursepage.webp)
 
 ### Module Lesson View
 Video lessons paired with lecture notes for each module.
 
-![Module Lesson](frontend/src/assets/modulepage.png)
+![Module Lesson](frontend/src/assets/modulepage.webp)
 
 ### Mini-Exam
 Quick module-level checks to unlock the next lesson.
 
-![Mini Exam](frontend/src/assets/miniexam.png)
+![Mini Exam](frontend/src/assets/miniexam.webp)
 
 ### Final Exam
 Comprehensive assessment covering all course modules.
 
-![Final Exam](frontend/src/assets/finalexam.png)
+![Final Exam](frontend/src/assets/finalexam.webp)
 
 ### Certificates
 Verified, downloadable certificates upon course completion.
 
-![Certificates](frontend/src/assets/certificates.png)
+![Certificates](frontend/src/assets/certificates.webp)
 
 ---
 
