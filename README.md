@@ -2,7 +2,7 @@
 
 **AI-powered personalized education platform — live and deployed.**
 
-[![Live Demo](frontend/src/assets/homepage.png)](https://learn-sphere-ai-lilac.vercel.app/)
+[![Live Demo](frontend/src/assets/homepage.webp)](https://learn-sphere-ai-lilac.vercel.app/)
 [![Backend](https://img.shields.io/badge/API-Render-46E3B7?logo=render)](https://learnsphere-ai-zt5x.onrender.com/)
 [![License](https://img.shields.io/badge/License-Educational%20Use-blue.svg)](#-license)
 
@@ -24,7 +24,7 @@ This project was developed as part of a **Personalized Education / AI-Powered Le
 ### Course Catalog & Dashboard
 Browse all courses, track progress, and pick up where you left off.
 
-![Dashboard & Catalog](frontend/src/assets/homepage.web)
+![Dashboard & Catalog](frontend/src/assets/homepage.webp)
 
 ### Course Detail Page
 Course overview with modules, learning outcomes, and enrollment.
