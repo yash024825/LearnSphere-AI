@@ -39,17 +39,17 @@ Video lessons paired with lecture notes for each module.
 ### Mini-Exam
 Quick module-level checks to unlock the next lesson.
 
-![Mini Exam](frontend/src/assets/miniexam.webp)
+![Mini Exam](frontend/src/assets/miniexampage.webp)
 
 ### Final Exam
 Comprehensive assessment covering all course modules.
 
-![Final Exam](frontend/src/assets/finalexam.webp)
+![Final Exam](frontend/src/assets/finalexampage.webp)
 
 ### Certificates
 Verified, downloadable certificates upon course completion.
 
-![Certificates](frontend/src/assets/certificates.webp)
+![Certificates](frontend/src/assets/certificatespage.webp)
 
 ---
 
