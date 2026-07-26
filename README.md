@@ -49,7 +49,7 @@ Comprehensive assessment covering all course modules.
 ### Certificates
 Verified, downloadable certificates upon course completion.
 
-![Certificates](frontend/src/assets/certificatespage.webp)
+![Certificates](frontend/src/assets/certificatepage.webp)
 
 ---
 
