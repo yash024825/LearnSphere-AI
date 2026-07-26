@@ -1,8 +1,10 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { protect } = require("../middleware/auth");
+const admin = require("../config/firebaseAdmin");
 
 const router = express.Router();
 
@@ -63,6 +65,56 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Login failed", error: err.message });
+  }
+});
+
+// POST /api/auth/google
+// Body: { idToken } -- a Firebase ID token obtained client-side via
+// signInWithPopup(auth, googleProvider). We verify it server-side (never
+// trust a client-asserted email) and either log in the matching user or
+// create a new one, then issue our own JWT exactly like /login and /signup.
+router.post("/google", async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: "idToken is required" });
+    }
+
+    let decoded;
+    try {
+      decoded = await admin.auth().verifyIdToken(idToken);
+    } catch (err) {
+      return res.status(401).json({ message: "Invalid or expired Google sign-in" });
+    }
+
+    const email = (decoded.email || "").toLowerCase();
+    if (!email) {
+      return res.status(400).json({ message: "Google account has no email" });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // New account via Google -- passwordHash is a required field on the
+      // schema but is never used for these accounts (they always sign in
+      // through Google, never the password route), so we fill it with a
+      // random value nobody could ever guess.
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const passwordHash = await bcrypt.hash(randomPassword, 10);
+      user = await User.create({
+        name: decoded.name || email.split("@")[0],
+        email,
+        passwordHash,
+      });
+    }
+
+    const token = signToken(user);
+    res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Google sign-in failed", error: err.message });
   }
 });
 

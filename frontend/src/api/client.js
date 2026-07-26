@@ -30,6 +30,12 @@ export const signup = (data) =>
 export const login = (data) =>
   client.post('/auth/login', data).then((r) => r.data)
 
+// Sends a Firebase ID token (from signInWithPopup) to our backend, which
+// verifies it and returns our own { token, user } -- same shape as
+// login/signup, so AuthContext can persist it identically.
+export const loginWithGoogle = (idToken) =>
+  client.post('/auth/google', { idToken }).then((r) => r.data)
+
 // ---- Courses ----
 export const getCourses = () =>
   client.get('/courses').then((r) => r.data)

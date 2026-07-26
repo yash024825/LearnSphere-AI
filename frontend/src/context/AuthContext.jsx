@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, googleProvider } from '../firebase'
 import * as api from '../api/client'
 
 const AuthContext = createContext(null)
@@ -31,6 +33,13 @@ export function AuthProvider({ children }) {
     return persist(data)
   }, [])
 
+  const loginWithGoogle = useCallback(async () => {
+    const result = await signInWithPopup(auth, googleProvider)
+    const idToken = await result.user.getIdToken()
+    const data = await api.loginWithGoogle(idToken)
+    return persist(data)
+  }, [])
+
   const logout = useCallback(() => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
@@ -39,7 +48,9 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, logout, isAuthed: !!token }}>
+    <AuthContext.Provider
+      value={{ user, token, login, signup, loginWithGoogle, logout, isAuthed: !!token }}
+    >
       {children}
     </AuthContext.Provider>
   )
