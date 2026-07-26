@@ -24,7 +24,7 @@ This project was developed as part of a **Personalized Education / AI-Powered Le
 ### Course Catalog & Dashboard
 Browse all courses, track progress, and pick up where you left off.
 
-![Dashboard & Catalog](frontend/src/assets/homepage.png)
+![Dashboard & Catalog](frontend/src/assets/homepage.web)
 
 ### Course Detail Page
 Course overview with modules, learning outcomes, and enrollment.
