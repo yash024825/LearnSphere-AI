@@ -1,6 +1,6 @@
-# 🎓 LearnSphere AI 🤖
+# 🎓 LearnSphere AI
 
-**AI-powered personalized education platform — live and deployed.**
+**A full-stack structured learning platform with sequential courses, gated exams, and verifiable certificates — live and deployed.**
 
 [![Live Demo](frontend/src/assets/homepage.webp)](https://learn-sphere-ai-lilac.vercel.app/)
 [![Backend](https://img.shields.io/badge/API-Render-46E3B7?logo=render)](https://learnsphere-ai-zt5x.onrender.com/)
@@ -13,9 +13,11 @@
 
 ---
 
-LearnSphere AI is an **AI-powered personalized education platform** designed to adapt learning content based on a student's performance, strengths, and weaknesses. The system follows an intelligent learning loop that teaches concepts, evaluates understanding through quizzes, and dynamically updates the learner's profile to optimize future explanations.
+## 📖 Overview
 
-This project was developed as part of a **Personalized Education / AI-Powered Learning** initiative and is suitable for hackathons, academic projects, and scalable real-world learning platforms.
+LearnSphere AI is a full-stack e-learning platform built around a **structured, sequential course model**: courses are broken into ordered modules, each with a lecture (video + notes) and a short mini-exam that gates progress to the next module. After completing every module, a learner unlocks a course-wide final exam, and passing it issues a **real, downloadable, verifiable PDF certificate** with a unique certificate code.
+
+Every gate — module unlocking, final exam access, certificate issuance — is enforced **server-side**, not just hidden behind disabled buttons in the UI.
 
 ---
 
@@ -47,34 +49,40 @@ Comprehensive assessment covering all course modules.
 ![Final Exam](frontend/src/assets/finalexampage.webp)
 
 ### Certificates
-Verified, downloadable certificates upon course completion.
+Verified, downloadable PDF certificates upon course completion.
 
 ![Certificates](frontend/src/assets/certificatepage.webp)
 
 ---
 
-## 🚀 Project Vision
+## ✨ Features
 
-Traditional learning platforms provide the same content to all learners. LearnSphere AI changes this by:
-
-- Personalizing learning paths for each student
-- Continuously adapting content difficulty
-- Using AI-driven evaluation and feedback loops
-- Improving student engagement and learning outcomes
+- 🔐 **Authentication** — email/password (bcrypt-hashed) and Google Sign-In, both issuing the same signed JWT session token
+- 🛡️ **Role-based access control** — `admin` vs `user` roles enforced via JWT middleware; only admins can create/edit/publish courses, modules, and exams
+- 📚 **Structured course catalog** — courses with title, description, category, thumbnail, and a configurable passing score (default 60%)
+- 🎬 **Sequential modules** — ordered lessons with video (uploaded via Multer, 500MB cap) or text content, unlocked strictly in order
+- 📝 **Mini-exams per module** — 3–4 question MCQ checks; a module can't be marked complete without a passing mini-exam attempt
+- 🏁 **Course-wide final exam** — unlocked only once every module is completed; scored server-side against admin-authored answer keys
+- 🎓 **PDF certificate generation** — a fully custom-designed certificate (PDFKit) streamed on download, with a unique verification code
+- 🔎 **Public certificate verification** — a public endpoint looks up any certificate by code, independent of the PDF itself
+- 📊 **Progress tracking** — enrollment records track completed modules per user per course
+- 🧾 **Full attempt history** — every exam and mini-exam attempt is logged (score, pass/fail, timestamp), separate from current progress
 
 ---
 
 ## 🧠 Core Learning Flow
 
-The platform follows this intelligent flow:
+```
+Enroll in course
+   → Complete Module 1 (video/notes) → Pass Module 1 mini-exam (≥60%)
+   → Complete Module 2 (video/notes) → Pass Module 2 mini-exam (≥60%)
+   → ... (repeats for every module, strictly in order)
+   → All modules complete → Final Exam unlocks
+   → Pass Final Exam (≥60%) → Certificate issued automatically
+   → Download certificate as PDF / verify it publicly by its unique code
+```
 
-1. **Teach Topic** – Present learning content
-2. **Generate Quiz** – Automatically generate assessment questions
-3. **Evaluate Answers** – Analyze student responses
-4. **Update Student Profile** – Track strengths & weaknesses
-5. **Modify Next Explanation** – Adapt the next lesson accordingly
-
-This loop repeats to ensure continuous improvement.
+Modules must be completed in order — a user cannot jump ahead to a later module before finishing and passing the mini-exam for every earlier one in that course.
 
 ---
 
@@ -82,11 +90,23 @@ This loop repeats to ensure continuous improvement.
 
 ```
 LearnSphere-AI/
-├── frontend/           # React.js frontend
-├── backend/            # Node.js / Express backend
-├── screenshots/         # App screenshots used in this README
-├── README.md
-└── .gitignore
+├── frontend/                # React.js frontend (Vite)
+│   └── src/
+│       ├── pages/            # CourseCatalog, CourseDetail, ModulePlayer,
+│       │                     # ModuleExam, Exam, Certificates, Login, Signup
+│       ├── api/               # Axios client
+│       ├── context/           # AuthContext (JWT session state)
+│       └── hooks/              # useCourseProgress
+├── backend/                  # Node.js / Express backend
+│   ├── models/                 # User, Course, Module, Exam, ModuleExam,
+│   │                           # Enrollment, ExamAttempt, ModuleExamAttempt, Certificate
+│   ├── routes/                  # authRoutes, courseRoutes, moduleRoutes,
+│   │                            # examRoutes, moduleExamRoutes, enrollmentRoutes, certificateRoutes
+│   ├── middleware/               # auth.js (JWT protect + adminOnly), upload.js (Multer)
+│   ├── config/                    # firebaseAdmin.js, db.js
+│   └── utils/                      # certificateGenerator.js (PDFKit)
+├── screenshots/
+└── README.md
 ```
 
 ---
@@ -102,56 +122,70 @@ LearnSphere-AI/
 
 ## 🎨 Frontend (React.js)
 
-### 🔹 Features
-
-- User Authentication (Login & Signup)
-- Dashboard for learners
-- Topic-based learning interface
-- Quiz UI with real-time evaluation
-- Personalized feedback display
-- Clean, responsive UI
-
 ### 🔹 Tech Stack
-
-- React.js
-- React Router
-- CSS / Tailwind CSS
+- React.js, React Router
+- Tailwind CSS
 - Axios (API communication)
 - Deployed on **Vercel**
+
+### 🔹 Key Pages
+- `Login` / `Signup` — email/password and Google Sign-In
+- `CourseCatalog` — browse published courses
+- `CourseDetail` — course overview, modules list, enrollment
+- `ModulePlayer` — video/notes viewer with a sidebar showing locked/complete/current step status across the whole course
+- `ModuleExam` — mini-exam UI with per-question correct/incorrect review after submission
+- `Exam` — final exam UI, same review pattern, triggers certificate issuance on a pass
+- `Certificates` — lists earned certificates and downloads them as PDFs
 
 ---
 
 ## ⚙️ Backend (Node.js + Express)
 
-### 🔹 Features
-
-- RESTful APIs for frontend
-- Quiz generation logic
-- Answer evaluation system
-- Student profile management
-- AI integration (LLM-based evaluation)
-- Secure environment variable handling
-
 ### 🔹 Tech Stack
-
-- Node.js
-- Express.js
-- MongoDB (or JSON/DB-based storage)
-- Groq / LLM API (AI logic)
+- Node.js, Express
+- MongoDB + Mongoose
+- JWT (`jsonwebtoken`) for session tokens, `bcryptjs` for password hashing
+- Firebase Admin SDK — verifies Google Sign-In ID tokens server-side (Firebase is used only for verifying Google identity; the platform's own session token is a self-issued JWT for **all** auth methods)
+- Multer — video upload handling
+- PDFKit — certificate PDF generation
 - dotenv for environment variables
 - Deployed on **Render**
+
+### 🔹 Authentication
+Three ways to get a session, all resulting in the same JWT:
+1. **Email/password** — `POST /api/auth/signup`, `POST /api/auth/login` (bcrypt-hashed passwords)
+2. **Google Sign-In** — `POST /api/auth/google`, verifies the Firebase ID token server-side via Firebase Admin before issuing the platform's own JWT
+3. Every protected route uses `protect` middleware (verifies the JWT, attaches `req.user`) and `adminOnly` middleware where relevant (checks `req.user.role === "admin"`)
+
+### 🔹 API Overview
+
+| Area | Route | Access |
+|---|---|---|
+| Auth | `POST /api/auth/signup`, `/login`, `/google`, `GET /me` | Public / self |
+| Courses | `GET /api/courses`, `GET /api/courses/:id` | Public |
+| Courses | `POST/PUT/DELETE /api/courses/:id`, `PATCH /:id/publish` | Admin only |
+| Modules | `POST/PUT/DELETE /api/modules`, `POST /:id/video` | Admin only |
+| Modules | `PATCH /api/modules/:id/complete` | Enrolled user |
+| Mini-exams | `POST /api/module-exams` | Admin only |
+| Mini-exams | `GET /api/module-exams/module/:id`, `POST /:id/submit` | Enrolled user |
+| Final exam | `POST /api/exams` | Admin only |
+| Final exam | `GET /api/exams/course/:id`, `POST /:id/submit` | Enrolled user (all modules complete) |
+| Enrollment | `POST /api/enrollments`, `GET /me`, `GET /:courseId` | Authenticated user |
+| Certificates | `GET /api/certificates/me`, `GET /:id/download` | Certificate owner |
+| Certificates | `GET /api/certificates/verify/:code` | Public |
+
+### 🔹 Certificate Generation
+On a passing final-exam score, the backend generates a unique certificate code (`CERT-<timestamp>-<random>`), stores a `Certificate` document (one per user per course, enforced by a unique compound index), and streams a fully custom-designed landscape PDF via PDFKit — no template image, every element (branding, seal, signature lines, recipient name, course title) is drawn programmatically. Certificates can be verified independently of the PDF via a public lookup on the certificate code.
 
 ---
 
 ## 🔐 Environment Variables
 
-Sensitive keys are stored securely using environment variables — never committed to the repo.
+Sensitive keys are stored securely using environment variables — never committed to the repo. Required variables include `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, and the Firebase Admin service account credentials (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`).
 
 ---
 
 ## 📦 Local Installation & Setup
-
-Prefer to run it locally? Follow these steps.
 
 ### 1️⃣ Clone the Repository
 
@@ -160,75 +194,66 @@ git clone https://github.com/yash024825/LearnSphere-AI.git
 cd LearnSphere-AI
 ```
 
-### 2️⃣ Frontend Setup
+### 2️⃣ Backend Setup
 
 ```bash
-cd frontend
+cd backend
+npm install
+```
+
+Create a `.env` file in `backend/` with `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, and your Firebase Admin credentials, then:
+
+```bash
+npm start
+```
+
+Backend will run at: `http://localhost:5000`
+
+### 3️⃣ Frontend Setup
+
+```bash
+cd ../frontend
 npm install
 npm start
 ```
 
 Frontend will run at: `http://localhost:3000`
 
-### 3️⃣ Backend Setup
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-Backend will run at: `http://localhost:5000`
-
----
-
-## 🧪 Sample Use Case
-
-1. Student logs in
-2. Selects a topic (e.g., Neural Networks)
-3. System teaches the topic
-4. Quiz is generated automatically
-5. Student submits answers
-6. AI evaluates performance
-7. Learning profile updates
-8. Next explanation is personalized
-
 ---
 
 ## 🎯 Use Cases
 
-- Personalized e-learning platforms
-- AI tutors
-- Adaptive exam preparation systems
+- Structured e-learning platforms with sequential, gated content
 - College & school LMS enhancements
-- Hackathons & research projects
+- Corporate training platforms needing verifiable completion certificates
+- Hackathons & academic projects
 
 ---
 
 ## 🌟 Future Enhancements
 
+- Fix a known bug where the module-completion route imports the final-exam model instead of the module-exam model, which currently lets the server-side mini-exam-passing requirement be silently skipped (frontend still gates it correctly)
 - Student analytics dashboard
-- Teacher/admin panel
+- Teacher/admin content-management panel in the UI (currently API-only)
 - Multi-language support
-- Voice-based AI tutor
-- Recommendation system for learning paths
-- ~~Cloud deployment (AWS / Vercel / Render)~~ ✅ **Done** — live on Vercel & Render
+- Optional AI-assisted quiz generation and free-text answer evaluation as an enhancement to the current static, admin-authored exam bank
 
 ---
 
-## 🛡️ Security Best Practices
+## 🛡️ Security Practices
 
-- API keys stored in `.env`
-- `.env` ignored via `.gitignore`
-- No secrets committed to GitHub
-- Secure authentication flow
+- Passwords hashed with bcrypt, never stored in plaintext
+- Google Sign-In tokens verified server-side via Firebase Admin SDK — never trusted from the client
+- All session auth uses signed JWTs; admin-only routes enforced via middleware, not client-side checks alone
+- Exam answer keys (`correctAnswerIndex`) are stripped from every response before a learner submits — only revealed after a submission is scored and saved
+- API keys and secrets stored in `.env`, gitignored, never committed
 
 ---
 
 ## 👨‍💻 Author
 
 **Yashwanth Tatikonda**
-B.Tech Student | AI & Full Stack Developer
+B.Tech Student | Full Stack Developer
 GitHub: [https://github.com/yash024825](https://github.com/yash024825)
 
 ---
@@ -247,4 +272,4 @@ If you found this project helpful:
 - 🍴 Fork it
 - 🧠 Build something amazing!
 
-**LearnSphere AI – Smarter Learning, One Student at a Time 🚀**
+**LearnSphere AI – Structured learning, verified progress, real certificates 🎓**
